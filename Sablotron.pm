@@ -42,7 +42,7 @@ use XML::SAX::Base;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.20';
+$VERSION = '0.30';
 @ISA = qw(XML::SAX::Base);
 
 
@@ -52,6 +52,7 @@ sub new {
     my $self = { Stylesheet => $opt{Stylesheet},
 		 Handler => $opt{Handler},
 		 _sab_handlers => $opt{SablotHandlers},
+		 ret => 0,
 	       };
     bless $self, $class;
     return $self;
@@ -65,6 +66,8 @@ sub parse_uri {
     $self->setSablotHandlers($sab);
     $sab->regHandler(2, $self);
     $sab->process($sit, $self->{Stylesheet}, $uri, "arg:/null");
+
+    return $self->{ret};
 }
 
 sub parse_string {
@@ -76,6 +79,8 @@ sub parse_string {
     $sab->regHandler(2, $self);
     $sab->addArg($sit, "_data", $str);
     $sab->process($sit, $self->{Stylesheet}, "arg:/_data", "arg:/null");
+
+    return $self->{ret};
 }
 
 sub parse_dom {
@@ -89,6 +94,8 @@ sub parse_dom {
     $sab->addArgTree($sit, 'data', $dom);
     $sab->addArgTree($sit, 'template', $templ);
     $sab->process($sit, 'arg:/template', 'arg:/data', 'arg:/null');
+
+    return $self->{ret};
 }
 
 sub setSablotHandlers {
@@ -218,6 +225,7 @@ sub SAXPI {
 sub SAXEndDocument {
     my ($self, $proc) = @_;
     #print "---> SAXEndDocument\n";
+    $self->{ret} = $self->SUPER::end_document;
 }
 
 1;

@@ -37,11 +37,12 @@ use strict;
 use warnings;
 
 use XML::Sablotron;
+use XML::Sablotron::DOM;
 use XML::SAX::Base;
 
 use vars qw($VERSION @ISA);
 
-$VERSION = '0.10';
+$VERSION = '0.20';
 @ISA = qw(XML::SAX::Base);
 
 
@@ -75,6 +76,19 @@ sub parse_string {
     $sab->regHandler(2, $self);
     $sab->addArg($sit, "_data", $str);
     $sab->process($sit, $self->{Stylesheet}, "arg:/_data", "arg:/null");
+}
+
+sub parse_dom {
+    my ($self, $dom) = @_;
+    my $sit = new XML::Sablotron::Situation;
+    my $sab = new XML::Sablotron;
+    my $templ = XML::Sablotron::DOM::parseStylesheet($sit,$self->{Stylesheet});
+
+    $self->setSablotHandlers($sab);
+    $sab->regHandler(2, $self);
+    $sab->addArgTree($sit, 'data', $dom);
+    $sab->addArgTree($sit, 'template', $templ);
+    $sab->process($sit, 'arg:/template', 'arg:/data', 'arg:/null');
 }
 
 sub setSablotHandlers {
@@ -252,6 +266,10 @@ handlers. Available keys are B<SchemeHandler>, B<MessageHandler> and B<MiscHandl
 =item parse_string($string)
 
   Applies the stylesheet to an XML data serialized to the $string.
+
+=item parse_dom($dom)
+
+  Applies the stylesheet to a DOM object (by XML::Sablotron::DOM).
 
 =back
 

@@ -1,0 +1,7 @@
+Revision history for Perl extension XML::SAXDriver::Sablot.
+
+0.10  Mar 6 2002
+	- original version; created by h2xs 1.20 with options
+		-A -c -f -n XML::SAXDriver::Sablot
+	- works with XML::Sablotron 0.90
+
